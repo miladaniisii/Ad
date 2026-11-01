@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>پرونده اورژانس ۱۱۴ — درد خنجری قفسه سینه و بین دو کتف</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#060a10;
+    --panel:#0d151f;
+    --panel-2:#111c28;
+    --line:#1d2a38;
+    --text:#e8eef3;
+    --muted:#7d8fa0;
+    --green:#33d17a;
+    --red:#ff5567;
+    --amber:#ffb84d;
+    --blue:#4fc3e0;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:radial-gradient(ellipse at 50% -10%, #0c1826 0%, var(--bg) 55%);
+    color:var(--text);
+    font-family:'Vazirmatn', sans-serif;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:20px 14px 60px;
+  }
+  .mono{font-family:'JetBrains Mono', monospace;}
+
+  /* ---- top monitor strip ---- */
+  .monitor-frame{
+    width:100%;
+    max-width:720px;
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:14px 14px 6px 6px;
+    padding:14px 18px 10px;
+    position:relative;
+    overflow:hidden;
+  }
+  .monitor-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;}
+  .case-id{font-size:12px;color:var(--muted);letter-spacing:.02em;}
+  .case-id b{color:var(--blue);font-weight:600;}
+  .patient-line{font-size:15px;font-weight:600;margin-top:4px;}
+  .status-chip{
+    font-family:'Vazirmatn', sans-serif;
+    font-size:11px;
+    color:var(--red);
+    border:1px solid rgba(255,85,103,.4);
+    background:rgba(255,85,103,.08);
+    padding:4px 10px;
+    border-radius:20px;
+    white-space:nowrap;
+    display:flex;
+    align-items:center;
+    gap:6px;
+  }
+  .status-chip .dot{width:6px;height:6px;border-radius:50%;background:var(--red);animation:blink 1.1s infinite;}
+  @keyframes blink{0%,100%{opacity:1;}50%{opacity:.25;}}
+
+  .ecg-wrap{
+    margin-top:12px;
+    height:44px;
+    overflow:hidden;
+    border-radius:6px;
+    background:#081019;
+    border:1px solid var(--line);
+    direction:ltr;
+  }
+  .ecg-wrap svg{display:block;}
+  .ecg-line{
+    fill:none;
+    stroke:var(--green);
+    stroke-width:1.5;
+    stroke-linecap:round;
+    stroke-linejoin:round;
+    vector-effect:non-scaling-stroke;
+  }
+  .ecg-move{animation:ecgmove 3s linear infinite;}
+  @keyframes ecgmove{from{transform:translateX(0);}to{transform:translateX(-300px);}}
+  @media (prefers-reduced-motion: reduce){
+    .status-chip .dot, .ecg-move{animation:none;}
+  }
+
+  /* ---- stepper ---- */
+  .stepper{display:flex;gap:5px;max-width:720px;width:100%;margin:10px 0 0;padding:0 2px;}
+  .stepper i{flex:1;height:3px;border-radius:2px;background:var(--line);transition:background .3s ease;}
+  .stepper i.done{background:var(--green);}
+  .stepper i.current{background:var(--blue);}
+
+  /* ---- main card ---- */
+  .card{
+    width:100%;
+    max-width:720px;
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-top:none;
+    border-radius:0 0 14px 14px;
+    padding:26px 24px 22px;
+  }
+  .stage-tag{
+    display:inline-flex;align-items:center;gap:8px;font-size:12px;color:var(--blue);
+    background:rgba(79,195,224,.09);border:1px solid rgba(79,195,224,.25);
+    padding:4px 12px;border-radius:20px;margin-bottom:14px;font-weight:500;
+  }
+  .stage-title{font-size:21px;font-weight:700;margin:0 0 14px;line-height:1.5;}
+  .stage-body{font-size:15.5px;line-height:2;color:#dbe4ec;}
+  .stage-body p{margin:0 0 12px;}
+  .stage-body ul{margin:0 0 12px;padding-inline-start:22px;}
+  .stage-body li{margin-bottom:6px;}
+
+  .vitals-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0;}
+  .vital-box{background:var(--panel-2);border:1px solid var(--line);border-radius:10px;padding:12px 14px;}
+  .vital-box .label{font-size:12px;color:var(--muted);}
+  .vital-box .value{font-family:'JetBrains Mono', monospace;font-size:22px;font-weight:700;margin-top:2px;}
+  .vital-box .value.crit{color:var(--red);}
+  .vital-box .value.warn{color:var(--amber);}
+  .vital-box .value.ok{color:var(--green);}
+
+  table.labs{width:100%;border-collapse:collapse;margin:14px 0;font-size:14.5px;}
+  table.labs th, table.labs td{padding:9px 10px;border-bottom:1px solid var(--line);text-align:right;vertical-align:top;line-height:1.8;}
+  table.labs th{color:var(--muted);font-weight:500;font-size:12.5px;}
+  table.labs td.val{font-family:'JetBrains Mono', monospace;font-weight:600;}
+  table.labs td.val.crit{color:var(--red);}
+  table.labs td.val.warn{color:var(--amber);}
+  table.labs td.val.ok{color:var(--green);}
+  .tbl-scroll{overflow-x:auto;}
+
+  .callout{
+    border-inline-start:3px solid var(--blue);background:rgba(79,195,224,.06);
+    padding:12px 14px;border-radius:6px;font-size:14.5px;line-height:1.9;margin-top:6px;
+  }
+  .callout.red{border-color:var(--red);background:rgba(255,85,103,.06);}
+  .callout.green{border-color:var(--green);background:rgba(51,209,122,.06);}
+  .callout.amber{border-color:var(--amber);background:rgba(255,184,77,.06);}
+
+  .pill{font-size:11.5px;padding:2px 9px;border-radius:20px;white-space:nowrap;display:inline-block;font-weight:600;}
+  .pill.pos{color:var(--red);background:rgba(255,85,103,.1);border:1px solid rgba(255,85,103,.35);}
+  .pill.neg{color:var(--green);background:rgba(51,209,122,.1);border:1px solid rgba(51,209,122,.35);}
+  .pill.na{color:var(--muted);background:rgba(125,143,160,.1);border:1px solid rgba(125,143,160,.35);}
+
+  /* detail (reveal) box */
+  .detail-box{margin-top:16px;padding-top:16px;border-top:1px dashed var(--line);display:none;animation:fadein .35s ease;}
+  .detail-box.show{display:block;}
+  @keyframes fadein{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+  .detail-box h4{margin:0 0 8px;font-size:13px;color:var(--green);font-weight:600;}
+  .detail-box p, .detail-box li{font-size:14.5px;line-height:1.95;color:#cfdbe6;}
+  .detail-box ul{padding-inline-start:22px;margin:0 0 10px;}
+
+  /* controls */
+  .controls{display:flex;justify-content:space-between;align-items:center;margin-top:22px;gap:10px;}
+  .progress-text{font-size:12px;color:var(--muted);font-family:'JetBrains Mono', monospace;}
+  button.next-btn{
+    background:var(--green);color:#04140b;border:none;font-family:'Vazirmatn', sans-serif;
+    font-weight:700;font-size:14.5px;padding:12px 22px;border-radius:9px;cursor:pointer;
+    transition:transform .12s ease, filter .12s ease;
+  }
+  button.next-btn:hover{filter:brightness(1.08);}
+  button.next-btn:active{transform:scale(.97);}
+  button.next-btn:focus-visible{outline:2px solid var(--blue);outline-offset:2px;}
+  button.next-btn.secondary{background:transparent;color:var(--blue);border:1px solid rgba(79,195,224,.4);}
+
+  /* ---- interactive questions ---- */
+  .q-group h3{font-size:13.5px;color:var(--blue);margin:20px 0 8px;font-weight:700;}
+  .q-card{
+    display:block;width:100%;text-align:right;background:var(--panel-2);border:1px solid var(--line);
+    border-radius:10px;padding:11px 14px;margin-bottom:8px;color:var(--text);font-family:inherit;
+    font-size:14.5px;line-height:1.8;cursor:pointer;transition:border-color .15s ease;
+  }
+  .q-card:hover{border-color:rgba(79,195,224,.45);}
+  .q-card:focus-visible{outline:2px solid var(--blue);outline-offset:2px;}
+  .q-card .ans{display:none;margin-top:8px;padding-top:8px;border-top:1px dashed var(--line);font-size:13.5px;color:#cfdbe6;line-height:1.9;}
+  .q-card.open{border-color:rgba(51,209,122,.45);}
+  .q-card.open .ans{display:block;animation:fadein .3s ease;}
+  .q-card .ans b.lbl{color:var(--green);}
+  .q-card .why{display:block;color:var(--muted);font-size:12.5px;margin-top:4px;}
+  .q-tools{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:6px 0 2px;}
+  .q-count{font-size:12px;color:var(--muted);}
+  .mini-btn{
+    background:transparent;color:var(--blue);border:1px solid rgba(79,195,224,.4);border-radius:8px;
+    font-family:inherit;font-size:12.5px;padding:5px 12px;cursor:pointer;
+  }
+  .mini-btn:focus-visible{outline:2px solid var(--blue);outline-offset:2px;}
+
+  /* ---- ECG viewer ---- */
+  .tabs{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 10px;}
+  .tab-btn{
+    background:var(--panel-2);color:var(--muted);border:1px solid var(--line);border-radius:8px;
+    font-family:inherit;font-size:12.5px;padding:7px 12px;cursor:pointer;line-height:1.6;
+  }
+  .tab-btn.active{color:var(--green);border-color:rgba(51,209,122,.5);background:rgba(51,209,122,.08);}
+  .tab-btn:focus-visible{outline:2px solid var(--blue);outline-offset:2px;}
+  .ecg-scroll{direction:ltr;overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:#071018;}
+  .ecg-scroll svg{display:block;min-width:640px;width:100%;height:auto;}
+  .ecg-note{margin-top:12px;font-size:14px;line-height:1.95;color:#cfdbe6;}
+  .ecg-note ul{margin:6px 0 0;padding-inline-start:22px;}
+  .ecg-caption{font-size:11.5px;color:var(--muted);margin-top:6px;line-height:1.8;}
+
+  /* ---- final ddx ---- */
+  .ddx-list{display:flex;flex-direction:column;gap:10px;margin-top:8px;}
+  details.ddx-item{background:var(--panel-2);border:1px solid var(--line);border-radius:10px;padding:12px 14px;}
+  details.ddx-item[open]{border-color:rgba(79,195,224,.35);}
+  details.ddx-item summary{cursor:pointer;list-style:none;display:flex;align-items:center;flex-wrap:wrap;gap:8px;}
+  details.ddx-item summary::-webkit-details-marker{display:none;}
+  details.ddx-item summary:focus-visible{outline:2px solid var(--blue);outline-offset:4px;border-radius:4px;}
+  .ddx-item .name{font-weight:700;font-size:14.5px;}
+  .ddx-item .status{font-size:11.5px;padding:2px 9px;border-radius:20px;}
+  .status.confirmed{color:var(--green);background:rgba(51,209,122,.1);border:1px solid rgba(51,209,122,.35);}
+  .status.ruled{color:var(--blue);background:rgba(79,195,224,.1);border:1px solid rgba(79,195,224,.35);}
+  .status.consider{color:var(--amber);background:rgba(255,184,77,.1);border:1px solid rgba(255,184,77,.35);}
+  .ddx-item .desc{font-size:13.5px;color:var(--muted);line-height:1.9;margin-top:10px;}
+  .ddx-item .ruleout{margin-top:10px;font-size:13.5px;line-height:1.9;color:#cfdbe6;}
+  .ddx-item .ruleout b.h{color:var(--green);}
+  .ddx-item .ruleout ul{margin:4px 0 0;padding-inline-start:22px;}
+  .ddx-item .ruleout li{margin-bottom:3px;}
+
+  .restart-row{display:flex;justify-content:center;margin-top:26px;}
+
+  footer{max-width:720px;width:100%;text-align:center;font-size:11.5px;color:var(--muted);margin-top:14px;line-height:1.9;}
+</style>
+</head>
+<body>
+
+<div class="monitor-frame">
+  <div class="monitor-top">
+    <div>
+      <div class="case-id">پرونده اورژانس <b>#۱۱۴</b> · مرد، ۵۲ ساله · کارمند</div>
+      <div class="patient-line">درد خنجری قفسه سینه و بین دو کتف — سه روز</div>
+    </div>
+    <div class="status-chip"><span class="dot"></span>نیازمند تصمیم فوری</div>
+  </div>
+  <div class="ecg-wrap">
+    <svg viewBox="0 0 300 44" width="100%" height="44" preserveAspectRatio="none">
+      <g class="ecg-move" id="bannerG"></g>
+    </svg>
+  </div>
+</div>
+
+<div class="stepper" id="stepper"></div>
+
+<div class="card">
+  <div id="stageContent"></div>
+  <div class="controls">
+    <span class="progress-text" id="progressText">۱ / ۱۱</span>
+    <button class="next-btn" id="nextBtn">اطلاعات بیشتر</button>
+  </div>
+</div>
+
+<footer>مرجع آموزشی: Harrison's Principles of Internal Medicine · Rosen's Emergency Medicine · 2022 ACC/AHA Aortic Disease Guideline<br>این کیس مجازی است و فقط برای آموزش طراحی شده؛ جایگزین قضاوت بالینی نیست. دوزها آموزشی‌اند و باید طبق پروتکل مرکز تنظیم شوند.</footer>
+
+<script>
+/* ================= ECG engine ================= */
+function gau(t,c,w){return Math.exp(-Math.pow((t-c)/w,2));}
+function sgm(x){return 1/(1+Math.exp(-x));}
+function beat(t,p){
+  let v=0;
+  v+=p.p*gau(t,0.07,0.022);
+  v-=p.q*gau(t,0.168,0.007);
+  v+=p.r*gau(t,0.185,0.009);
+  v-=p.s*gau(t,0.205,0.009);
+  v+=p.st*sgm((t-0.22)/0.008)*(1-sgm((t-0.34)/0.02));
+  v+=p.t*gau(t,0.40,0.055);
+  return v;
+}
+
+function buildBanner(){
+  const p={p:1.2,q:.3,r:10,s:1,st:-.3,t:2.5};
+  let d='';
+  for(let t=0;t<=3.0001;t+=0.01){
+    const x=t*100;
+    const y=22-beat(t%0.6,p)*1.3;
+    d+=(d?'L':'M')+x.toFixed(1)+','+y.toFixed(1);
+  }
+  document.getElementById('bannerG').innerHTML=
+    '<path class="ecg-line" d="'+d+'"/><path class="ecg-line" d="'+d+'" transform="translate(300,0)"/>';
+}
+
+const LEAD_GRID=[['I','aVR','V1','V4'],['II','aVL','V2','V5'],['III','aVF','V3','V6']];
+
+const ECGS={
+  patient:{
+    hr:100,
+    label:'ECG این بیمار',
+    leads:{
+      I:{p:.8,q:.5,r:9,s:1,st:-1,t:-1},
+      II:{p:1.2,q:.3,r:10,s:1,st:-.3,t:2.5},
+      III:{p:.8,q:0,r:3.5,s:1,st:0,t:1.2},
+      aVR:{p:-1,q:0,r:.6,s:7,st:.4,t:-2},
+      aVL:{p:.4,q:0,r:10,s:.5,st:-1.8,t:-2.5},
+      aVF:{p:1,q:.2,r:6,s:1,st:-.2,t:1.8},
+      V1:{p:.6,q:0,r:1.5,s:17,st:1.5,t:3},
+      V2:{p:.6,q:0,r:3,s:19,st:2,t:5},
+      V3:{p:.6,q:0,r:6,s:14,st:1,t:4},
+      V4:{p:.6,q:.3,r:13,s:5,st:-.5,t:2.5},
+      V5:{p:.6,q:.5,r:19,s:2,st:-1.8,t:-1.5},
+      V6:{p:.6,q:.5,r:14,s:1,st:-2,t:-2.5}
+    },
+    note:'<b>تفسیر:</b> ریتم سینوسی با ضربان ≈ ۱۰۰ (تاکی‌کاردی مرزی).<ul>'+
+      '<li><b>ولتاژ بالا (LVH):</b> S در V1 به‌علاوه R در V5 بیش از ۳۵ mm — در زمینه فشار خون کنترل‌نشده قابل انتظار است.</li>'+
+      '<li><b>الگوی strain:</b> افت ST با T معکوس نامتقارن در I، aVL، V5 و V6.</li>'+
+      '<li><b>بدون ST elevation</b> و بدون Q پاتولوژیک.</li></ul>'+
+      '<div class="callout" style="margin-top:10px;">این ECG نه دایسکشن را تأیید می‌کند و نه رد. فقط می‌گوید STEMI واضحی وجود ندارد و بیمار احتمالاً سال‌ها فشار بالا داشته است.</div>'
+  },
+  rca:{
+    hr:90,
+    label:'نمونه مقایسه: درگیری RCA (STEMI تحتانی)',
+    leads:{
+      I:{p:.8,q:.3,r:7,s:1,st:-1.2,t:-.5},
+      II:{p:1.2,q:.4,r:8,s:1,st:3,t:5},
+      III:{p:.9,q:.6,r:6,s:1,st:4,t:6},
+      aVR:{p:-.9,q:0,r:.5,s:5,st:-1.5,t:-1},
+      aVL:{p:.3,q:0,r:2,s:3,st:-2.5,t:-3},
+      aVF:{p:1,q:.4,r:7,s:1,st:3.5,t:5.5},
+      V1:{p:.6,q:0,r:1.5,s:8,st:0,t:1},
+      V2:{p:.6,q:0,r:3,s:12,st:-1,t:2},
+      V3:{p:.6,q:0,r:6,s:9,st:0,t:3},
+      V4:{p:.6,q:.3,r:10,s:4,st:0,t:3.5},
+      V5:{p:.6,q:.4,r:11,s:2,st:0,t:3},
+      V6:{p:.6,q:.4,r:9,s:1,st:0,t:2.5}
+    },
+    note:'<b>این نوار مربوط به بیمار ما نیست.</b> برای مقایسه آمده است: ST elevation در II، III و aVF با افت متقابل (reciprocal) در I و aVL.<ul>'+
+      '<li>در دایسکشن آئورت صعودی، دهانه کرونر راست (RCA) می‌تواند درگیر شود و تصویر STEMI تحتانی بسازد.</li>'+
+      '<li>اگر همراه با چنین ECG، اختلاف فشار دو بازو، درد پاره‌کننده یا مدیاستن پهن دیده شد، <b>قبل از ترومبولیز، هپارین یا کاتتریزاسیون، آئورت باید بررسی شود.</b></li></ul>'
+  },
+  normal:{
+    hr:85,
+    label:'نمونه مقایسه: ECG نرمال',
+    leads:{
+      I:{p:.8,q:.3,r:7,s:1,st:0,t:2},
+      II:{p:1.2,q:.3,r:9,s:1,st:0,t:3},
+      III:{p:.8,q:0,r:4,s:1,st:0,t:1.5},
+      aVR:{p:-1,q:0,r:.5,s:6,st:0,t:-2.5},
+      aVL:{p:.4,q:0,r:3,s:2,st:0,t:1},
+      aVF:{p:1,q:.2,r:6,s:1,st:0,t:2},
+      V1:{p:.6,q:0,r:2,s:9,st:.5,t:1.5},
+      V2:{p:.6,q:0,r:4,s:12,st:1,t:4},
+      V3:{p:.6,q:0,r:7,s:7,st:.5,t:4},
+      V4:{p:.6,q:.3,r:11,s:3,st:0,t:4},
+      V5:{p:.6,q:.4,r:11,s:1.5,st:0,t:3},
+      V6:{p:.6,q:.4,r:9,s:1,st:0,t:2.5}
+    },
+    note:'<b>این نوار مربوط به بیمار ما نیست.</b> در حدود یک‌سوم بیماران دایسکشن، ECG کاملاً نرمال است؛ پس ECG نرمال هرگز دایسکشن را رد نمی‌کند.'
+  }
+};
+
+function leadPath(x0,cy,dur,rr,p,off){
+  let d='';
+  for(let t=0;t<=dur+0.0001;t+=0.006){
+    const tt=((t+off)%rr+rr)%rr;
+    const v=beat(tt,p);
+    const x=x0+t*25;
+    const y=cy-v;
+    d+=(d?'L':'M')+x.toFixed(2)+','+y.toFixed(2);
+  }
+  return d;
+}
+
+function ecgSvg(key){
+  const cfg=ECGS[key];
+  const rr=60/cfg.hr;
+  const W=250,H=160;
+  let s='<svg viewBox="0 0 '+W+' '+H+'" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="ECG ۱۲ لیدی شبیه‌سازی‌شده">';
+  s+='<defs>'+
+     '<pattern id="gMin" width="1" height="1" patternUnits="userSpaceOnUse"><path d="M1 0V1H0" fill="none" stroke="rgba(51,209,122,.13)" stroke-width="0.08"/></pattern>'+
+     '<pattern id="gMaj" width="5" height="5" patternUnits="userSpaceOnUse"><path d="M5 0V5H0" fill="none" stroke="rgba(51,209,122,.30)" stroke-width="0.14"/></pattern>'+
+     '</defs>';
+  s+='<rect width="'+W+'" height="'+H+'" fill="#071018"/>';
+  s+='<rect width="'+W+'" height="'+H+'" fill="url(#gMin)"/>';
+  s+='<rect width="'+W+'" height="'+H+'" fill="url(#gMaj)"/>';
+  for(let r=0;r<3;r++){
+    for(let c=0;c<4;c++){
+      const name=LEAD_GRID[r][c];
+      const cy=r*40+20;
+      const x0=c*62.5;
+      s+='<path d="'+leadPath(x0,cy,2.5,rr,cfg.leads[name],c*2.5+0.12)+'" fill="none" stroke="#33d17a" stroke-width="0.42" stroke-linejoin="round" stroke-linecap="round"/>';
+      s+='<text x="'+(x0+1.5)+'" y="'+(r*40+5.5)+'" font-size="4.2" fill="#9fb3c4" font-family="JetBrains Mono, monospace" font-weight="600">'+name+'</text>';
+      if(c>0){ s+='<path d="M'+x0+','+(cy-3)+'V'+(cy+3)+'" stroke="#9fb3c4" stroke-width="0.3"/>'; }
+    }
+  }
+  s+='<path d="'+leadPath(0,140,10,rr,cfg.leads.II,0.12)+'" fill="none" stroke="#33d17a" stroke-width="0.42" stroke-linejoin="round" stroke-linecap="round"/>';
+  s+='<text x="1.5" y="125.5" font-size="4.2" fill="#9fb3c4" font-family="JetBrains Mono, monospace" font-weight="600">II</text>';
+  s+='</svg>';
+  return s;
+}
+
+function initEcg(){
+  const host=document.getElementById('ecgHost');
+  const noteEl=document.getElementById('ecgNote');
+  const tabs=document.querySelectorAll('.tab-btn');
+  function show(key){
+    host.innerHTML=ecgSvg(key);
+    noteEl.innerHTML=ECGS[key].note;
+    tabs.forEach(b=>b.classList.toggle('active',b.dataset.key===key));
+  }
+  tabs.forEach(b=>b.addEventListener('click',()=>show(b.dataset.key)));
+  show('patient');
+}
+
+/* ================= History questions ================= */
+const QUESTIONS=[
+ {g:'ویژگی‌های درد',
+  q:'درد چطور شروع شد؟ ناگهانی یا تدریجی؟ در چه فعالیتی؟',
+  a:'سه روز پیش، هنگام کار پشت میز، ناگهانی شروع شد و از همان لحظه اول بیشترین شدت را داشت.',
+  why:'شروع ناگهانی با حداکثر شدت در لحظه آغاز، مشخصه سندرم‌های حاد آئورتی است؛ درد ACS معمولاً به‌تدریج شدیدتر می‌شود.'},
+ {g:'ویژگی‌های درد',
+  q:'درد چه کیفیتی دارد؟ فشارنده، سوزشی، پاره‌کننده یا خنجری؟',
+  a:'«مثل فرو رفتن چاقو از جلوی سینه تا بین دو کتف». شدت ۸ از ۱۰.',
+  why:'کیفیت خنجری/پاره‌کننده در دایسکشن و فشارنده-سنگین در ایسکمی میوکارد شایع‌تر است.'},
+ {g:'ویژگی‌های درد',
+  q:'درد به کجاها کشیده می‌شود؟ جابه‌جا شده است؟',
+  a:'هم جلوی قفسه سینه و هم بین دو کتف است. به بازو و فک نمی‌رود و به شکم نرفته است.',
+  why:'انتشار به پشت و حرکت درد به سمت پایین (migrating) به نفع دایسکشن است؛ انتشار به بازو و فک بیشتر به نفع ACS.'},
+ {g:'ویژگی‌های درد',
+  q:'درد با تنفس عمیق، تغییر وضعیت بدن، راه رفتن یا غذا خوردن تغییر می‌کند؟',
+  a:'هیچ‌کدام. در این سه روز اصلاً کم و زیاد نشده و با استامینوفن خوراکی هم بهتر نشده است.',
+  why:'درد با دم = پلورزی/آمبولی ریه/پریکاردیت؛ با وضعیت = پریکاردیت/عضلانی؛ با فعالیت = آنژین؛ با غذا = مری. درد ثابت و مستقل از همه این‌ها، فاجعه عروقی را مطرح می‌کند.'},
+
+ {g:'علائم همراه',
+  q:'غش یا نزدیک به غش، تعریق سرد یا تپش قلب داشته‌اید؟',
+  a:'غش نکرده. فقط در ساعات اول کمی تعریق سرد داشته. تنگی نفس ندارد.',
+  why:'سنکوپ می‌تواند نشانه تامپوناد، پارگی یا درگیری شاخه‌های قوس باشد؛ تنگی نفس به نفع PE یا نارسایی آئورت.'},
+ {g:'علائم همراه',
+  q:'ضعف یا بی‌حسی یک سمت بدن، اختلال تکلم یا دید، یا ضعف ناگهانی پاها؟',
+  a:'خیر. هیچ علامت عصبی ندارد.',
+  why:'درگیری کاروتید (سکته) یا شریان‌های نخاعی (ایسکمی نخاع) در دایسکشن رخ می‌دهد و تصمیم درمانی را تغییر می‌دهد.'},
+ {g:'علائم همراه',
+  q:'درد شکم، استفراغ، خون در مدفوع یا کم شدن ادرار؟',
+  a:'درد شکم ندارد. ادرار طبیعی است.',
+  why:'درگیری شاخه‌های مزانتریک و کلیوی (malperfusion) را غربال می‌کند.'},
+ {g:'علائم همراه',
+  q:'سردی، درد، گرفتگی یا کاهش قدرت در دست‌ها و پاها؟',
+  a:'چند روزی است پاهایش کمی سردتر از قبل شده؛ درد و بی‌حسی ندارد.',
+  why:'سردی اندام نشانه اختلال خون‌رسانی دیستال است و گستردگی دایسکشن (تا شکم و لگن) را مطرح می‌کند.'},
+ {g:'علائم همراه',
+  q:'گرفتگی صدا، مشکل در بلع، سرفه خونی؟',
+  a:'خیر.',
+  why:'فشار آئورت یا آنوریسم روی عصب راجعه حنجره، مری یا برونش.'},
+ {g:'علائم همراه',
+  q:'تب، سرفه و خلط، استفراغ شدید قبل از شروع درد، سوزش سردل؟',
+  a:'هیچ‌کدام.',
+  why:'به ترتیب پنومونی/پلورزی، پارگی مری (Boerhaave) و ریفلاکس را از لیست خارج یا وارد می‌کند.'},
+
+ {g:'زمینه و عوامل خطر',
+  q:'سابقه فشار خون بالا؟ تا حالا درمان شده‌اید؟',
+  a:'فشارش را منظم اندازه نگرفته. دو سال پیش یک بار گفته‌اند «بالاست» ولی درمانی نکرده. اکنون دارویی نمی‌خورد.',
+  why:'فشار خون کنترل‌نشده شایع‌ترین عامل زمینه‌ساز دایسکشن است.'},
+ {g:'زمینه و عوامل خطر',
+  q:'تریاک، کوکایین، شیشه یا مکمل‌های محرک مصرف می‌کنید؟ مدت مصرف و زمان ترک؟',
+  a:'سال‌ها تریاک مصرف کرده ولی اکنون مصرف نمی‌کند؛ تزریقی نبوده. کوکایین، شیشه و مکمل نداشته.',
+  why:'کوکایین و مت‌آمفتامین با جهش فشار، عامل خطر شناخته‌شده دایسکشن‌اند. سابقه تریاک اهمیت خود را در تحمل نسبی به مسکن‌ها و پایش تنفس هنگام تیتر اپیوئید نشان می‌دهد.'},
+ {g:'زمینه و عوامل خطر',
+  q:'سیگار می‌کشید؟ چقدر؟',
+  a:'۱۵ پک‌ایر.',
+  why:'سیگار عامل خطر آترواسکلروز و آنوریسم آئورت است و ریسک ACS را هم بالا می‌برد.'},
+ {g:'زمینه و عوامل خطر',
+  q:'در خانواده، مرگ ناگهانی، آنوریسم یا دایسکشن آئورت، یا بیماری بافت همبند (مثل مارفان) بوده است؟',
+  a:'پدرش حدود ۵۸ سالگی ناگهان فوت کرده؛ علت مشخص نیست.',
+  why:'سابقه خانوادگی بیماری آئورت، حتی مبهم، باید ثبت شود و بعداً غربالگری بستگان را مطرح می‌کند.'},
+ {g:'زمینه و عوامل خطر',
+  q:'جراحی یا کاتتر قلبی، بیماری دریچه آئورت (مثلاً دریچه دوکاسپید)، ضربه شدید به قفسه سینه، بیماری التهابی عروق (تاکایاسو)، سیفلیس یا مصرف فلوروکینولون؟',
+  a:'هیچ‌کدام.',
+  why:'هر کدام می‌تواند دیواره آئورت را تضعیف کند؛ فلوروکینولون‌ها با افزایش ریسک آنوریسم/دایسکشن همراه شده‌اند.'},
+ {g:'زمینه و عوامل خطر',
+  q:'ورزش یا کار سنگین، وزنه‌برداری، زور زدن شدید در روزهای قبل؟',
+  a:'خیر.',
+  why:'اوج ناگهانی فشار می‌تواند محرک باشد.'}
+];
+
+function questionsHtml(){
+  let html='<p>روی هر سؤال بزن تا پاسخ بیمار و دلیل پرسیدنش را ببینی.</p>';
+  html+='<div class="q-tools"><span class="q-count" id="qCount"></span><button class="mini-btn" id="qAll" type="button">نمایش همه پاسخ‌ها</button></div>';
+  let cur='';
+  QUESTIONS.forEach((it,i)=>{
+    if(it.g!==cur){
+      if(cur) html+='</div>';
+      html+='<div class="q-group"><h3>'+it.g+'</h3>';
+      cur=it.g;
+    }
+    html+='<button type="button" class="q-card" data-i="'+i+'" aria-expanded="false">'+
+          it.q+
+          '<span class="ans"><b class="lbl">پاسخ بیمار:</b> '+it.a+'<span class="why"><b>چرا می‌پرسیم:</b> '+it.why+'</span></span>'+
+          '</button>';
+  });
+  html+='</div>';
+  return html;
+}
+
+function initQuestions(){
+  const cards=Array.from(document.querySelectorAll('.q-card'));
+  const countEl=document.getElementById('qCount');
+  const allBtn=document.getElementById('qAll');
+  function update(){
+    const n=cards.filter(c=>c.classList.contains('open')).length;
+    countEl.textContent=toFaDigits(n)+' از '+toFaDigits(cards.length)+' پاسخ باز شده';
+  }
+  cards.forEach(c=>c.addEventListener('click',()=>{
+    const open=c.classList.toggle('open');
+    c.setAttribute('aria-expanded',open?'true':'false');
+    update();
+  }));
+  let allOpen=false;
+  allBtn.addEventListener('click',()=>{
+    allOpen=!allOpen;
+    cards.forEach(c=>{c.classList.toggle('open',allOpen);c.setAttribute('aria-expanded',allOpen?'true':'false');});
+    allBtn.textContent=allOpen?'بستن همه پاسخ‌ها':'نمایش همه پاسخ‌ها';
+    update();
+  });
+  update();
+}
+
+/* ================= Stages ================= */
+const stages = [
+{
+  tag: "ورود · دقیقه صفر",
+  title: "بیمار با درد خنجری قفسه سینه و بین دو کتف",
+  body: `
+    <p>مردی ۵۲ ساله، کارمند، با <b>درد خنجری قفسه سینه که به بین دو کتف هم می‌رسد</b> به اورژانس آمده است. درد از <b>سه روز پیش</b> شروع شده و در تمام این مدت <b>اصلاً کم و زیاد نشده</b> است.</p>
+    <ul>
+      <li>سابقه مصرف تریاک (اکنون مصرف نمی‌کند)؛ دارویی نمی‌خورد</li>
+      <li>سیگار: ۱۵ پک‌ایر</li>
+    </ul>
+    <div class="callout">در هر درد قفسه سینه، شش علت کشنده را قبل از بقیه در ذهن نگه دار: <b>ACS، آمبولی ریه، دایسکشن آئورت، پنوموتوراکس فشارنده، پارگی مری، تامپوناد.</b></div>
+  `,
+  detail: `
+    <h4>چه چیزی ذهن را به سمت آئورت می‌برد؟</h4>
+    <ul>
+      <li><b>خنجری</b> بودن درد</li>
+      <li><b>انتشار به بین دو کتف</b> (پشت)</li>
+      <li><b>ثابت بودن کامل</b> درد: با تنفس، حرکت و فعالیت تغییر نمی‌کند</li>
+      <li>سیگار و احتمال فشار خون درمان‌نشده به‌عنوان زمینه</li>
+    </ul>
+    <p>هنوز تشخیصی نداریم. در همین لحظه باید هم‌زمان علائم حیاتی را بگیری و در <b>هر دو بازو</b> فشار را اندازه بگیری.</p>
+  `
+},
+{
+  tag: "ارزیابی اولیه",
+  title: "علائم حیاتی",
+  body: `
+    <div class="vitals-grid">
+      <div class="vital-box"><div class="label">فشار بازوی راست</div><div class="value crit">۱۶۸/۹۴</div></div>
+      <div class="vital-box"><div class="label">فشار بازوی چپ</div><div class="value warn">۱۳۸/۸۰</div></div>
+      <div class="vital-box"><div class="label">اختلاف سیستولیک دو بازو</div><div class="value crit">۳۰ mmHg</div></div>
+      <div class="vital-box"><div class="label">ضربان قلب</div><div class="value warn">۱۰۰ /min</div></div>
+      <div class="vital-box"><div class="label">تنفس</div><div class="value ok">۱۸ /min</div></div>
+      <div class="vital-box"><div class="label">اشباع اکسیژن</div><div class="value ok">٪۹۷</div></div>
+      <div class="vital-box"><div class="label">دمای بدن</div><div class="value ok">°۳۶.۸C</div></div>
+      <div class="vital-box"><div class="label">GCS</div><div class="value ok">۱۵</div></div>
+    </div>
+  `,
+  detail: `
+    <h4>تفسیر بالینی</h4>
+    <p>اختلاف فشار سیستولیک <b>بیش از ۲۰ mmHg</b> بین دو بازو در درد حاد قفسه سینه، یعنی احتمال درگیری شاخه‌های قوس آئورت (براکیوسفالیک یا ساب‌کلاوین چپ). اینجا بازوی چپ پایین‌تر است.</p>
+    <ul>
+      <li>برای <b>تصمیم درمانی</b> عدد بازوی <b>بالاتر</b> ملاک است (۱۶۸/۹۴).</li>
+      <li>اشباع اکسیژن و تنفس طبیعی، آمبولی ریه و پنوموتوراکس بزرگ را کم‌احتمال می‌کند، اما رد نمی‌کند.</li>
+      <li>فشار بالا خودش خطرناک است: هر چه فشار و ضربان بیشتر باشد، نیروی وارد بر لبه جداشده آئورت بیشتر است.</li>
+    </ul>
+    <p>اعداد این کیس مجازی‌اند؛ مهم، الگوی آن‌هاست.</p>
+  `
+},
+{
+  tag: "شرح‌حال هدفمند",
+  title: "چه سؤال‌هایی باید پرسیده شود؟",
+  body: questionsHtml(),
+  init: initQuestions,
+  detail: `
+    <h4>جمع‌بندی شرح‌حال</h4>
+    <p>سه سؤال که بیشترین وزن را برای دایسکشن دارند: <b>شروع ناگهانی؟ شدت از همان لحظه اول؟ کیفیت پاره‌کننده/خنجری؟</b> در این بیمار هر سه مثبت است. بقیه سؤال‌ها به سه کار کمک می‌کنند:</p>
+    <ul>
+      <li>گستردگی درگیری را برآورد کنیم (مغز، شکم، کلیه، اندام)</li>
+      <li>عوامل زمینه‌ساز را پیدا کنیم (فشار خون درمان‌نشده، سیگار، سابقه خانوادگی)</li>
+      <li>تشخیص‌های افتراقی را کنار بگذاریم (پلورزی، وضعیتی بودن، ارتباط با غذا و فعالیت)</li>
+    </ul>
+    <p>نتیجه شرح‌حال، همان‌طور که در مرحله امتیازدهی خواهی دید، مستقیم وارد <b>ADD-RS</b> می‌شود.</p>
+  `
+},
+{
+  tag: "معاینه هدفمند",
+  title: "چه یافته‌هایی انتظار داریم و بیمار چه دارد؟",
+  body: `
+    <div class="tbl-scroll">
+    <table class="labs">
+      <tr><th>معاینه</th><th>انتظار در دایسکشن</th><th>این بیمار</th></tr>
+      <tr><td>فشار هر دو بازو</td><td>اختلاف سیستولیک &gt; ۲۰ mmHg</td><td><span class="pill pos">مثبت</span> راست ۱۶۸/۹۴، چپ ۱۳۸/۸۰</td></tr>
+      <tr><td>نبض اندام‌ها</td><td>کمبود نبض (pulse deficit) در اقلیتی از بیماران</td><td><span class="pill neg">وجود ندارد</span> نبض هر ۴ اندام لمس می‌شود</td></tr>
+      <tr><td>دمای اندام تحتانی</td><td>سردی/رنگ‌پریدگی در ایسکمی اندام</td><td><span class="pill pos">مثبت</span> هر دو پا کمی سرد</td></tr>
+      <tr><td>سمع قلب</td><td>سوفل دیاستولیک زودرس (نارسایی آئورت) در درگیری ریشه</td><td><span class="pill pos">مثبت</span> سوفل دیاستولیک خفیف ۱ تا ۲ از ۶ در لبه چپ استرنوم</td></tr>
+      <tr><td>نورولوژیک</td><td>کاهش قدرت یک‌طرفه یا ضعف پاها در درگیری کاروتید/نخاع</td><td><span class="pill neg">طبیعی</span></td></tr>
+      <tr><td>علائم تامپوناد</td><td>JVP بالا، صداهای قلب دور، پالس پارادوکس</td><td><span class="pill neg">ندارد</span></td></tr>
+      <tr><td>ریه‌ها</td><td>گاهی افیوژن پلور (چپ)</td><td><span class="pill neg">کلیر</span></td></tr>
+      <tr><td>شکم</td><td>تندرنس در ایسکمی مزانتریک</td><td><span class="pill neg">نرم، بدون تندرنس</span></td></tr>
+      <tr><td>دیواره قفسه سینه</td><td>تندرنس لمسی نباید توجیه‌کننده درد باشد</td><td><span class="pill neg">تندرنس ندارد</span></td></tr>
+    </table>
+    </div>
+  `,
+  detail: `
+    <h4>نکات مهم معاینه</h4>
+    <ul>
+      <li><b>نبودن pulse deficit دایسکشن را رد نمی‌کند.</b> این یافته فقط در درصد کمی از بیماران دیده می‌شود.</li>
+      <li>اختلاف فشار + سردی پاها یعنی <b>درگیری چندسطحی</b>: قوس آئورت (بازو) و آئورت نزولی/ایلیاک (پاها).</li>
+      <li>سوفل جدید AR + درد، یعنی احتمال درگیری آئورت صعودی (Type A) بیشتر می‌شود.</li>
+      <li>هیچ‌کدام از علائم تامپوناد وجود ندارد، ولی در این بیمار باید با اکو بررسی شود چون مایع پریکارد خطرناک‌ترین عارضه است.</li>
+    </ul>
+  `
+},
+{
+  tag: "پاراکلینیک اولیه",
+  title: "نوار قلب ۱۲ لیدی",
+  body: `
+    <p>ظرف ۱۰ دقیقه اول ECG گرفته شد. بین نوار بیمار و دو نمونه مقایسه‌ای جابه‌جا شو:</p>
+    <div class="tabs" id="ecgTabs">
+      <button type="button" class="tab-btn" data-key="patient">ECG این بیمار</button>
+      <button type="button" class="tab-btn" data-key="rca">نمونه: درگیری RCA (STEMI تحتانی)</button>
+      <button type="button" class="tab-btn" data-key="normal">نمونه: نرمال</button>
+    </div>
+    <div class="ecg-scroll" id="ecgHost"></div>
+    <div class="ecg-caption">نوار شبیه‌سازی‌شده (۲۵ mm/s، ۱۰ mm/mV)؛ نمونه آموزشی است و تصویر واقعی بیمار نیست. برای دیدن ECG‌های واقعی دایسکشن، کتابخانه ECG سایت LITFL و فصل ECG در Rosen را ببین.</div>
+    <div class="ecg-note" id="ecgNote"></div>
+  `,
+  init: initEcg,
+  detail: `
+    <h4>نقش ECG در دایسکشن</h4>
+    <ul>
+      <li>ECG برای <b>تشخیص دایسکشن</b> نیست؛ برای پیدا کردن <b>ACS همزمان یا ناشی از درگیری کرونر</b> است.</li>
+      <li>تقریباً یک‌سوم بیماران ECG نرمال دارند. بیشتر بقیه تغییرات غیراختصاصی ST-T یا LVH دارند. ایسکمی حاد در درصد کمی دیده می‌شود.</li>
+      <li>در این بیمار LVH با strain و بدون ST elevation دیده می‌شود و تروپونین هم (در مرحله بعد) منفی است؛ پس ACS مطرح‌کننده نیست.</li>
+      <li>ECG را <b>تکرار کن</b>: اگر دایسکشن به کرونر برسد، تغییرات ممکن است بعداً ظاهر شوند.</li>
+    </ul>
+  `
+},
+{
+  tag: "اقدام · ساعت طلایی",
+  title: "اقدامات فوری (۰ تا ۳۰ دقیقه)",
+  body: `
+    <p>درد خنجری + اختلاف فشار دو بازو، تا اثبات خلاف، <b>سندرم حاد آئورتی</b> است. هم‌زمان انجام می‌شود:</p>
+    <ul>
+      <li>مانیتورینگ مداوم (ECG، فشار، SpO2) و <b>دو رگ بزرگ</b> (۱۶ تا ۱۸G)</li>
+      <li>نمونه‌گیری: CBC، کراتینین و الکترولیت، hs-troponin، لاکتات، PT/PTT، آنزیم کبدی، <b>گروه خون و کراس‌مچ</b></li>
+      <li><b>کنترل درد</b> با اپیوئید وریدی تیتره (مثلاً فنتانیل یا مورفین): درد یعنی تحریک سمپاتیک، یعنی ضربان و فشار بیشتر</li>
+      <li><b>کنترل ضربان و فشار:</b> هدف ضربان ≈ ۶۰ تا ۸۰ و فشار سیستولیک ≈ ۱۰۰ تا ۱۲۰ mmHg. اول <b>بتابلوکر وریدی</b> (Esmolol یا Labetalol)، بعد وازودیلاتور اگر هنوز لازم بود</li>
+      <li>NPO، آماده‌باش اتاق عمل و <b>مشاوره فوری جراحی قلب</b></li>
+    </ul>
+    <div class="callout red"><b>ممنوع تا رد دایسکشن:</b> آسپرین/کلوپیدوگرل، هپارین، ترومبولیتیک. حتی اگر ECG شبیه STEMI بود، با اختلاف فشار یا مدیاستن پهن اول آئورت را تصویربرداری کن.</div>
+  `,
+  detail: `
+    <h4>چرا اول بتابلوکر؟</h4>
+    <p>وازودیلاتورهای تنها (نیتروپروساید، نیکاردیپین) باعث تاکی‌کاردی رفلکسی می‌شوند و سرعت افزایش فشار (dP/dt) را زیاد می‌کنند؛ یعنی فشار بیشتر روی لبه جداشده. پس ابتدا ضربان را پایین می‌آوریم.</p>
+    <ul>
+      <li><b>Esmolol:</b> بولوس ۵۰۰ mcg/kg سپس ۵۰ تا ۲۰۰ mcg/kg/min</li>
+      <li><b>Labetalol:</b> ۲۰ mg وریدی آهسته، سپس ۲۰ تا ۸۰ mg هر ۱۰ دقیقه یا انفوزیون</li>
+      <li><b>اگر بتابلوکر ممنوع است</b> (آسم/COPD شدید، بلوک AV، براکی‌کاردی): دیلتیازم یا وراپامیل وریدی</li>
+      <li><b>احتیاط:</b> در نارسایی شدید آئورت، بتابلوکر ممکن است تاکی‌کاردی جبرانی را بگیرد و بیمار را بدتر کند. در این بیمار AR خفیف است ولی باید با اکو تعیین شود.</li>
+    </ul>
+    <p>چون بیمار سابقه تریاک دارد، بسته به مدت ترک ممکن است هنوز نسبت به اپیوئید تحمل نسبی داشته باشد؛ دوز مسکن را بر اساس پاسخ تیتر کن و تنفس و هوشیاری را مراقب باش.</p>
+    <p>اگر هیپوتانسیون ایجاد شد، دنبال علت بگرد (تامپوناد، پارگی)؛ از مایع کنترل‌شده و نوراپی‌نفرین استفاده کن و از اینوتروپ‌ها که dP/dt را بالا می‌برند پرهیز کن. دوزها آموزشی‌اند و باید طبق پروتکل مرکز تنظیم شوند.</p>
+  `
+},
+{
+  tag: "پاراکلینیک اولیه",
+  title: "آزمایش‌ها، رادیوگرافی و اکوی کنار تخت",
+  body: `
+    <table class="labs">
+      <tr><th>پارامتر</th><th>مقدار</th></tr>
+      <tr><td>hs-Troponin</td><td class="val ok">زیر حد (منفی)</td></tr>
+      <tr><td>D-dimer</td><td class="val warn">۴.۸ µg/mL FEU (بالا)</td></tr>
+      <tr><td>کراتینین</td><td class="val warn">۱.۳ mg/dL</td></tr>
+      <tr><td>لاکتات</td><td class="val ok">۱.۸ mmol/L</td></tr>
+      <tr><td>WBC / Hb / پلاکت</td><td class="val">۱۱,۲۰۰ · ۱۴.۲ · ۲۳۰,۰۰۰</td></tr>
+    </table>
+    <ul>
+      <li><b>CXR:</b> مدیاستن کمی پهن، برجستگی ناحیه ناف آئورت (aortic knob)، ریه‌ها بدون پنوموتوراکس</li>
+      <li><b>اکوی کنار تخت:</b> ریشه/آئورت صعودی حدود ۴۵ mm، نارسایی خفیف آئورت، <b>افیوژن پریکارد کم بدون علائم تامپوناد</b></li>
+    </ul>
+  `,
+  detail: `
+    <h4>تفسیر بالینی</h4>
+    <ul>
+      <li><b>تروپونین منفی + ECG بدون ST elevation:</b> ACS کم‌احتمال است.</li>
+      <li><b>D-dimer</b> در دایسکشن بالا می‌رود، اما در آمبولی ریه و بسیاری از بیماری‌های دیگر هم بالا می‌رود. چون ADD-RS این بیمار بالا است، D-dimer اصلاً لازم نیست.</li>
+      <li><b>کراتینین ۱.۳</b> ممکن است نشانه شروع اختلال خون‌رسانی کلیه باشد؛ باید ثبت و پیگیری شود (و در تصمیم‌گیری درباره کنتراست اثری ندارد، چون تاخیر خطرناک‌تر است).</li>
+      <li>CXR طبیعی دایسکشن را رد نمی‌کند، و اکو هم به‌تنهایی رد‌کننده نیست؛ حساسیت اکوی سطحی برای قوس و آئورت نزولی محدود است.</li>
+    </ul>
+  `
+},
+{
+  tag: "تصمیم تشخیصی",
+  title: "امتیاز خطر ADD-RS و انتخاب تصویربرداری",
+  body: `
+    <div class="tbl-scroll">
+    <table class="labs">
+      <tr><th>گروه</th><th>معیارها</th><th>این بیمار</th></tr>
+      <tr><td>عوامل زمینه‌ای پرخطر</td><td>مارفان یا بیماری بافت همبند، سابقه خانوادگی بیماری آئورت، بیماری دریچه آئورت، جراحی/اقدام اخیر آئورت، آنوریسم قفسه سینه</td><td><span class="pill na">۰</span></td></tr>
+      <tr><td>ویژگی‌های پرخطر درد</td><td>شروع ناگهانی، شدید، پاره‌کننده/خنجری</td><td><span class="pill pos">۱</span> ناگهانی و خنجری</td></tr>
+      <tr><td>یافته‌های پرخطر معاینه</td><td>کمبود نبض، اختلاف فشار سیستولیک، نقص عصبی موضعی با درد، سوفل جدید AR با درد، هیپوتانسیون/شوک</td><td><span class="pill pos">۱</span> اختلاف فشار ۳۰ mmHg و سوفل خفیف AR</td></tr>
+    </table>
+    </div>
+    <div class="callout red"><b>جمع امتیاز = ۲ ← پرخطر.</b> بدون D-dimer، فوراً <b>CT آنژیوگرافی آئورت</b> (قفسه سینه، شکم و لگن).</div>
+  `,
+  detail: `
+    <h4>تفسیر امتیاز</h4>
+    <ul>
+      <li>هر گروه حداکثر یک امتیاز می‌گیرد. امتیاز <b>۰</b> یا <b>۱</b> → D-dimer کمک می‌کند (در ۰ با احتیاط). امتیاز <b>۲ یا بیشتر</b> → مستقیم تصویربرداری.</li>
+    </ul>
+    <h4>انتخاب روش تصویربرداری</h4>
+    <table class="labs">
+      <tr><th>روش</th><th>کاربرد</th></tr>
+      <tr><td><b>CTA آئورت</b></td><td>انتخاب اول در بیمار پایدار؛ سریع، در دسترس، نمایش کل آئورت و شاخه‌ها</td></tr>
+      <tr><td><b>TEE</b></td><td>بیمار ناپایدار که نمی‌تواند به CT برود، یا حین عمل؛ نیاز به آرام‌بخشی</td></tr>
+      <tr><td><b>MRA</b></td><td>بیمار پایدار با منع کنتراست یا پیگیری؛ زمان‌بر</td></tr>
+      <tr><td><b>TTE</b></td><td>غربال اولیه برای افیوژن پریکارد، AR و ریشه؛ رد‌کننده نیست</td></tr>
+    </table>
+  `
+},
+{
+  tag: "تأیید تشخیص",
+  title: "نتیجه CT آنژیوگرافی آئورت",
+  body: `
+    <p>CTA با کنترل فشار و ضربان انجام شد:</p>
+    <ul>
+      <li><b>فلپ اینتیمایی</b> (true lumen و false lumen) از <b>آئورت صعودی</b> شروع شده، از قوس عبور کرده و تا <b>آئورت نزولی و هر دو شریان ایلیاک مشترک</b> ادامه دارد.</li>
+      <li><b>نتیجه:</b> Stanford <b>Type A</b> / DeBakey <b>I</b></li>
+      <li>دهانه ساب‌کلاوین چپ با false lumen تحت فشار است؛ توضیح‌دهنده فشار کمتر بازوی چپ.</li>
+      <li>true lumen در ایلیاک‌ها باریک شده؛ توضیح‌دهنده سردی پاها.</li>
+      <li>افیوژن پریکارد کم، بدون فشار بر حفرات قلب؛ دهانه‌های کرونر و عروق کلیوی از true lumen خارج می‌شوند و درگیر نیستند؛ پارگی ندارد.</li>
+    </ul>
+  `,
+  detail: `
+    <h4>طبقه‌بندی و تصمیم</h4>
+    <table class="labs">
+      <tr><th>نوع</th><th>تعریف</th><th>درمان</th></tr>
+      <tr><td><b>Stanford A</b><br>(DeBakey I, II)</td><td>درگیری آئورت صعودی</td><td><b>جراحی اورژانس</b></td></tr>
+      <tr><td><b>Stanford B</b> بدون عارضه<br>(DeBakey III)</td><td>فقط بعد از ساب‌کلاوین چپ</td><td>درمان دارویی (کنترل فشار و ضربان)</td></tr>
+      <tr><td><b>Stanford B</b> عارضه‌دار</td><td>پارگی، ایسکمی عضو/اندام، درد یا فشار مقاوم، رشد سریع</td><td>TEVAR (اندوواسکولار) یا جراحی</td></tr>
+    </table>
+    <p>نکته: بیمار ما <b>سه روز</b> با Type A زنده مانده؛ این نشانه خوش‌شانسی است، نه خوش‌خیمی. خطر مرگ در Type A درمان‌نشده در ۴۸ ساعت اول حدود ۱ تا ۲ درصد در هر ساعت گزارش شده است و بعد هم بالا می‌ماند.</p>
+  `
+},
+{
+  tag: "درمان قطعی",
+  title: "مدیریت Type A",
+  body: `
+    <ul>
+      <li><b>انتقال فوری به اتاق عمل:</b> جایگزینی آئورت صعودی (± هم‌آرچ، ریشه به روش Bentall، ریسوسپنشن یا تعویض دریچه)</li>
+      <li>تا انتقال به اتاق عمل: ادامه کنترل ضربان و فشار، مسکن، آماده‌باش خون و پایش لاکتات/کراتینین</li>
+      <li><b>سردی پاها (malperfusion):</b> بعد از ترمیم مرکزی معمولاً بهتر می‌شود؛ اگر ایسکمی پابرجا بود، اقدام اضافه لازم است</li>
+      <li><b>افیوژن پریکارد:</b> بدون تامپوناد نیاز به تخلیه ندارد؛ در تامپوناد ناپایدار، فقط تخلیه محدود و کنترل‌شده به‌عنوان پل تا جراحی</li>
+    </ul>
+    <div class="callout">زمان‌بندی کلی: ECG و رگ‌گیری در دقایق اول، کنترل ضربان و فشار تا ۳۰ دقیقه، CTA ظرف یک ساعت، اتاق عمل بلافاصله پس از تأیید.</div>
+  `,
+  detail: `
+    <h4>جمع‌بندی زمان‌بندی</h4>
+    <table class="labs">
+      <tr><th>بازه زمانی</th><th>اقدام</th></tr>
+      <tr><td>۰ تا ۱۰ دقیقه</td><td>مانیتور، رگ‌گیری، ECG، آزمایش و کراس‌مچ، مسکن</td></tr>
+      <tr><td>۱۰ تا ۳۰ دقیقه</td><td>بتابلوکر وریدی تا هدف ضربان و فشار، اکوی کنار تخت، تماس با جراح قلب</td></tr>
+      <tr><td>۳۰ تا ۶۰ دقیقه</td><td>CTA آئورت (قفسه سینه، شکم، لگن)</td></tr>
+      <tr><td>پس از تأیید Type A</td><td>انتقال فوری به اتاق عمل، سپس ICU</td></tr>
+      <tr><td>Type B بدون عارضه</td><td>درمان دارویی و پایش در ICU/CCU</td></tr>
+      <tr><td>Type B عارضه‌دار</td><td>TEVAR یا مداخله اندوواسکولار</td></tr>
+    </table>
+  `
+},
+{
+  tag: "نتیجه",
+  title: "سرانجام بیمار و تشخیص‌های افتراقی",
+  body: `
+    <p>بیمار بلافاصله به اتاق عمل منتقل شد. آئورت صعودی و هم‌آرچ با گرافت دکرون جایگزین شد و دریچه آئورت ریسوسپند گردید. جریان خون پاها پس از ترمیم بهتر شد و بیمار پس از دوره بستری در ICU و بخش ترخیص شد.</p>
+    <p><b>پیگیری:</b> کنترل دقیق فشار (هدف زیر ۱۳۰/۸۰) با بتابلوکر، ترک سیگار، تصویربرداری (CT یا MRA) در ماه ۱، ۳، ۶، ۱۲ و سپس سالانه، و بررسی بستگان درجه یک.</p>
+  `,
+  detail: null,
+  final: true
+}
+];
+
+let idx = 0;
+let revealed = false;
+
+const stageContent = document.getElementById('stageContent');
+const nextBtn = document.getElementById('nextBtn');
+const progressText = document.getElementById('progressText');
+const stepperEl = document.getElementById('stepper');
+
+function toFaDigits(n){
+  const fa = ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹'];
+  return String(n).replace(/[0-9]/g, d => fa[d]);
+}
+
+function buildStepper(){
+  stepperEl.innerHTML = '';
+  stages.forEach((_, i) => {
+    const el = document.createElement('i');
+    if(i < idx) el.classList.add('done');
+    if(i === idx) el.classList.add('current');
+    stepperEl.appendChild(el);
+  });
+}
+
+function renderStage(){
+  const s = stages[idx];
+  revealed = false;
+
+  let html = `
+    <div class="stage-tag">${s.tag}</div>
+    <h2 class="stage-title">${s.title}</h2>
+    <div class="stage-body">${s.body}</div>
+  `;
+
+  if(s.detail){
+    html += `<div class="detail-box" id="detailBox"><h4>&#9679; تفسیر / نکته آموزشی</h4>${s.detail}</div>`;
+  }
+
+  if(s.final){
+    html += renderFinalDdx();
+    html += `<div class="restart-row"><button class="next-btn secondary" id="restartBtn">شروع دوباره کیس</button></div>`;
+  }
+
+  stageContent.innerHTML = html;
+  buildStepper();
+  progressText.textContent = toFaDigits(idx+1) + ' / ' + toFaDigits(stages.length);
+
+  if(s.init) s.init();
+
+  if(s.final){
+    nextBtn.style.display = 'none';
+    document.getElementById('restartBtn').addEventListener('click', () => {
+      idx = 0;
+      nextBtn.style.display = 'inline-block';
+      renderStage();
+      window.scrollTo({top:0, behavior:'smooth'});
+    });
+  } else {
+    nextBtn.style.display = 'inline-block';
+    nextBtn.textContent = s.detail ? 'اطلاعات بیشتر' : 'مرحله بعد';
+  }
+}
+
+function renderFinalDdx(){
+  const items = [
+    {
+      name:'دایسکشن حاد آئورت (Stanford A)', status:'confirmed', statusLabel:'تأیید شده', open:true,
+      desc:'تشخیص نهایی. درد ناگهانی خنجری با انتشار به بین دو کتف، اختلاف فشار ۳۰ mmHg بین دو بازو، سردی پاها و سوفل جدید AR، همگی با CTA تأیید شدند.',
+      rule:[
+        '<b>تأیید:</b> CTA آئورت با نمایش فلپ اینتیمایی و دو لومن',
+        'ADD-RS برابر ۲ ← تصویربرداری فوری، بدون نیاز به D-dimer',
+        'اکوی کنار تخت: ریشه گشاد، AR خفیف، افیوژن پریکارد'
+      ]
+    },
+    {
+      name:'سندرم حاد کرونری (STEMI / NSTEMI)', status:'ruled', statusLabel:'رد شد',
+      desc:'شایع‌ترین علت درد قفسه سینه حاد و مهم‌ترین تقلید‌کننده. ACS می‌تواند هم‌زمان با دایسکشن یا به‌واسطه درگیری کرونر وجود داشته باشد.',
+      rule:[
+        '<b>سرنخ‌های ACS:</b> درد فشارنده و سنگین، وابسته به فعالیت، انتشار به بازو/فک، تعریق، تغییر دینامیک ECG',
+        '<b>این بیمار:</b> ECG بدون ST elevation (فقط LVH و strain)، hs-troponin منفی، درد ثابت و وابسته به فعالیت نبود',
+        '<b>ابزار رد:</b> ECG سریال (۰، ۱۵ تا ۳۰ دقیقه، ۳ ساعت) و hs-troponin سریال',
+        '<b>هشدار:</b> اگر ST elevation همراه اختلاف فشار یا مدیاستن پهن بود، قبل از ترومبولیز/کاتتریزاسیون آئورت را تصویربرداری کن'
+      ]
+    },
+    {
+      name:'آمبولی ریه', status:'ruled', statusLabel:'رد شد',
+      desc:'درد قفسه سینه حاد می‌تواند بدون یافته‌های واضح باشد؛ ترکیب با D-dimer بالا گمراه‌کننده است چون D-dimer در دایسکشن هم بالا می‌رود.',
+      rule:[
+        '<b>سرنخ‌ها:</b> درد پلورتیک، تنگی نفس، هیپوکسی، تاکی‌کاردی، علائم DVT، فاکتور خطر ترومبوآمبولی',
+        '<b>این بیمار:</b> SpO2 برابر ۹۷٪، تنفس ۱۸، بدون تنگی نفس و بدون علائم DVT، درد غیرپلورتیک',
+        '<b>ابزار رد:</b> امتیاز Wells، ECG (S1Q3T3، استرین راست)، و CT با پروتکل مناسب که شریان‌های ریوی را هم نشان دهد',
+        'فشار متفاوت دو بازو در PE دیده نمی‌شود'
+      ]
+    },
+    {
+      name:'پریکاردیت حاد / میوپریکاردیت', status:'ruled', statusLabel:'رد شد',
+      desc:'درد پلورتیک-وضعیتی است و افیوژن در دایسکشن (هموپریکارد) را نباید با پریکاردیت اشتباه گرفت.',
+      rule:[
+        '<b>سرنخ‌ها:</b> درد با دم عمیق بدتر و با خم شدن به جلو بهتر می‌شود، رب (friction rub)، ST elevation منتشر با PR depression، پیش‌زمینه ویروسی',
+        '<b>این بیمار:</b> درد ثابت و مستقل از وضعیت، بدون رب، ECG بدون ST elevation منتشر',
+        '<b>ابزار رد:</b> ECG، اکو، تروپونین/CRP'
+      ]
+    },
+    {
+      name:'پنوموتوراکس / پلورزی / پنومونی', status:'ruled', statusLabel:'رد شد',
+      desc:'علل ریوی-پلورال درد حاد قفسه سینه.',
+      rule:[
+        '<b>سرنخ‌ها:</b> درد پلورتیک، تنگی نفس ناگهانی، کاهش صدای تنفسی، انحراف تراشه، تب، سرفه و خلط',
+        '<b>این بیمار:</b> سمع ریه کلیر، بدون تب و سرفه؛ CXR بدون پنوموتوراکس یا کدورت',
+        '<b>ابزار رد:</b> معاینه ریه، CXR، و در صورت شک، اولتراسوند ریه'
+      ]
+    },
+    {
+      name:'پارگی مری (Boerhaave) / ازوفاژیت / GERD', status:'ruled', statusLabel:'رد شد',
+      desc:'درد قفسه سینه و پشت می‌تواند از مری باشد؛ پارگی مری یک اورژانس جراحی است و GERD تشخیص حذفی است.',
+      rule:[
+        '<b>سرنخ‌ها:</b> استفراغ شدید قبل از درد، آمفیزم زیرجلدی، Hamman crunch، درد با بلع، ارتباط با غذا و خوابیدن، پاسخ به آنتی‌اسید',
+        '<b>این بیمار:</b> بدون استفراغ و بدون ارتباط با غذا',
+        '<b>ابزار رد:</b> CXR/CT (پنومومدیاستن، افیوژن)، و در صورت لزوم CT با کنتراست خوراکی'
+      ]
+    },
+    {
+      name:'سایر سندرم‌های حاد آئورتی: IMH و PAU', status:'consider', statusLabel:'باید مدنظر باشد',
+      desc:'هماتوم داخل‌جداری (IMH) و زخم نافذ آترواسکلروتیک (PAU) شبیه دایسکشن‌اند و به‌ویژه در سیگاری مسن با فشار بالا مطرح می‌شوند.',
+      rule:[
+        '<b>IMH:</b> ضخامت هلالی و هایپردنس دیواره آئورت در فاز بدون کنتراست، بدون فلپ',
+        '<b>PAU:</b> برجستگی پرشده با کنتراست از میان پلاک آترواسکلروتیک، معمولاً در آئورت نزولی',
+        '<b>این بیمار:</b> فلپ کلاسیک و دو لومن دیده شد؛ پس هر دو منتفی‌اند',
+        '<b>ابزار افتراق:</b> CT بدون و با کنتراست'
+      ]
+    },
+    {
+      name:'آنوریسم آئورت در حال نشت یا پارگی', status:'consider', statusLabel:'باید فعالانه رد شود',
+      desc:'اورژانس عروقی دیگری که با درد شدید و ناپایداری همراه می‌شود.',
+      rule:[
+        '<b>سرنخ‌ها:</b> سابقه آنوریسم شناخته‌شده، توده ضربان‌دار، هیپوتانسیون، هموتوراکس',
+        '<b>این بیمار:</b> فشار بالا و ثبات هموديناميک؛ CTA پارگی نشان نداد',
+        '<b>ابزار رد:</b> CTA آئورت'
+      ]
+    },
+    {
+      name:'تنگی/انسداد مزمن ساب‌کلاوین (آترواسکلروز یا تاکایاسو)', status:'consider', statusLabel:'باید مدنظر باشد',
+      desc:'اختلاف فشار دو بازو در سیگاری می‌تواند فقط به‌خاطر تنگی مزمن ساب‌کلاوین باشد.',
+      rule:[
+        '<b>سرنخ‌ها:</b> اختلاف فشار مزمن بدون درد حاد، سوفل بالای ترقوه، کلودیکاسیون بازو؛ در زنان جوان تاکایاسو با ESR/CRP بالا',
+        '<b>این بیمار:</b> درد حاد خنجری، سردی پا و سوفل AR را توضیح نمی‌دهد؛ CTA فلپ را نشان داد',
+        '<b>ابزار افتراق:</b> CTA یا داپلر شریان ساب‌کلاوین، ESR/CRP'
+      ]
+    },
+    {
+      name:'علل غیرحیاتی: عضلانی-اسکلتی، زونا، پانکراس/صفرا', status:'ruled', statusLabel:'رد شد',
+      desc:'فقط بعد از رد علل خطرناک پذیرفته می‌شوند. تندرنس لمسی دیواره قفسه سینه هرگز نباید علت خطرناک را کنار بگذارد.',
+      rule:[
+        '<b>عضلانی-اسکلتی:</b> درد قابل بازتولید با لمس یا حرکت، بدون یافته‌های سیستمیک',
+        '<b>زونا:</b> درد سوزشی در توزیع درماتوم و دانه‌های وزیکولی بعد از ۱ تا ۳ روز',
+        '<b>پانکراتیت/صفرا:</b> درد اپی‌گاستر با انتشار به پشت، تهوع، افزایش لیپاز',
+        '<b>این بیمار:</b> تندرنس ندارد، شکم نرم و بدون یافته پوستی'
+      ]
+    },
+    {
+      name:'تامپوناد قلبی (عارضه، نه تشخیص جدا)', status:'consider', statusLabel:'باید فعالانه رد شود',
+      desc:'مهم‌ترین عارضه کشنده دایسکشن Type A است و با اکو در همان دقایق اول بررسی می‌شود.',
+      rule:[
+        '<b>سرنخ‌ها:</b> JVP بالا، صداهای دور قلب، پالس پارادوکس، هیپوتانسیون (تریاد Beck)',
+        '<b>این بیمار:</b> افیوژن کم بدون علائم تامپوناد، اما تحت پایش با اکوی مکرر',
+        '<b>ابزار رد:</b> اکوی کنار تخت'
+      ]
+    }
+  ];
+
+  let html = `<div class="callout green" style="margin-top:22px;"><b>جمع‌بندی نهایی:</b> دایسکشن Stanford A از آئورت صعودی تا ایلیاک‌ها، در سیگاریِ با فشار خون درمان‌نشده. کلید تشخیص: <b>شروع ناگهانی و ثابت درد خنجری، اختلاف فشار دو بازو و ADD-RS برابر ۲</b>، و کلید نجات: <b>کنترل ضربان و فشار، پرهیز از ضدانعقاد و جراحی فوری.</b></div>`;
+  html += `<h4 style="margin-top:20px; color:var(--text); font-size:14px;">تشخیص‌های افتراقی و عواملی که با آن‌ها رد می‌کنیم (برای دیدن جزئیات بزن):</h4>`;
+  html += `<div class="ddx-list">`;
+  items.forEach(it => {
+    html += `<details class="ddx-item"${it.open?' open':''}>
+      <summary><span class="name">${it.name}</span><span class="status ${it.status}">${it.statusLabel}</span></summary>
+      <div class="desc">${it.desc}</div>
+      <div class="ruleout"><b class="h">چگونه تأیید یا رد می‌کنیم:</b><ul>${it.rule.map(r=>'<li>'+r+'</li>').join('')}</ul></div>
+    </details>`;
+  });
+  html += `</div>`;
+  return html;
+}
+
+nextBtn.addEventListener('click', () => {
+  const s = stages[idx];
+  if(s.detail && !revealed){
+    revealed = true;
+    document.getElementById('detailBox').classList.add('show');
+    nextBtn.textContent = 'مرحله بعد';
+    return;
+  }
+  if(idx < stages.length - 1){
+    idx++;
+    renderStage();
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+});
+
+buildBanner();
+renderStage();
+</script>
+
+</body>
+</html>
